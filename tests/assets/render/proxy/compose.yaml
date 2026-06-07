@@ -1,0 +1,9 @@
+name: proxy
+services:
+  proxy:
+    image: traefik
+    networks:
+      - edge
+networks:
+  edge:
+    name: edge_net

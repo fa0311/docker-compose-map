@@ -1,0 +1,23 @@
+name: app
+services:
+  web:
+    image: nginx
+    depends_on:
+      - db
+    networks:
+      - edge
+    ports:
+      - "8080:80"
+    volumes:
+      - data:/var/lib/app
+      - /srv/shared:/srv/shared
+  db:
+    image: postgres
+    networks:
+      - edge
+volumes:
+  data:
+networks:
+  edge:
+    name: edge_net
+    external: true

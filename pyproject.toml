@@ -1,0 +1,46 @@
+[project]
+name = "docker-compose-map"
+version = "0.1.0"
+description = "Render Docker Compose stacks as Mermaid Markdown."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pydantic>=2.12.4",
+    "pydantic-settings>=2.12.0",
+    "pyyaml>=6.0.3",
+    "typer>=0.20.0",
+]
+
+[project.scripts]
+tool-mermaid = "docker_compose_map.cli:run"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.407",
+    "pytest>=9.0.1",
+    "ruff>=0.14.6",
+    "types-pyyaml>=6.0.12.20250915",
+]
+
+[build-system]
+requires = ["uv_build>=0.11.19,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+package = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "RUF", "SIM", "UP"]
+
+[tool.pyright]
+include = ["src", "tests"]
+pythonVersion = "3.12"
+typeCheckingMode = "standard"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
