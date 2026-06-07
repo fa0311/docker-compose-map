@@ -93,11 +93,17 @@ graph TD
 <!-- compose-map:dependencies:start -->
 ```mermaid
 graph TD
+  outside(("🌐 External<br/>Internet / LAN"))
   c__app["app"]
   c__proxy["proxy"]
+  v__app__web["web"]
 
   c__app -->|"edge_net"| c__proxy
 
+  outside -->|"publishes :8080"| v__app__web
+
   classDef net fill:#fef3c7,stroke:#d97706,color:#7c2d12;
+  classDef out fill:#dcfce7,stroke:#16a34a,color:#14532d;
+  class outside out;
 ```
 <!-- compose-map:dependencies:end -->
