@@ -1,23 +1,17 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from pathlib import Path
-from shutil import copytree
 
 import pytest
 
 from docker_compose_map.discovery import select_compose_files
 
-ASSETS = Path(__file__).parent / "assets"
 
-
-def copy_asset(name: str, tmp_path: Path) -> Path:
-    destination = tmp_path / name
-    copytree(ASSETS / name, destination)
-    return destination
-
-
-def test_directory_input_uses_shallowest_compose_per_top_level(tmp_path: Path) -> None:
-    repo = copy_asset("discovery", tmp_path)
+def test_directory_input_uses_shallowest_compose_per_top_level(
+    copy_asset: Callable[[str], Path],
+) -> None:
+    repo = copy_asset("discovery")
 
     selection = select_compose_files((str(repo),))
 

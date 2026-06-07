@@ -38,8 +38,8 @@ graph LR
 <!-- compose-map:map:end -->
 ````
 
-The default template contains `map`, `network`, `volumes`, and `dependencies`
-blocks. Missing output files use the same shape as `templates/compose-graph.md`.
+The built-in default template contains `dependencies`, `map`, `network`, and
+`volumes` blocks. Templates may include only the blocks they need.
 
 ## Development
 

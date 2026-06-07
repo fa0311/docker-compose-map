@@ -7,6 +7,11 @@ from docker_compose_map.domain import GraphName
 
 DEFAULT_TEMPLATE = """# Docker Compose dependency map
 
+## Compose dependencies
+
+<!-- compose-map:dependencies:start -->
+<!-- compose-map:dependencies:end -->
+
 ## Map
 
 <!-- compose-map:map:start -->
@@ -21,11 +26,6 @@ DEFAULT_TEMPLATE = """# Docker Compose dependency map
 
 <!-- compose-map:volumes:start -->
 <!-- compose-map:volumes:end -->
-
-## Compose dependencies
-
-<!-- compose-map:dependencies:start -->
-<!-- compose-map:dependencies:end -->
 """
 
 
@@ -40,11 +40,11 @@ def _replace_graph(template: str, graph_name: GraphName, generated_mermaid: str)
     start_marker = _start_marker(graph_name)
     end_marker = _end_marker(graph_name)
     if template.count(start_marker) != 1 or template.count(end_marker) != 1:
-        raise ValueError(
-            f"template must contain exactly one {start_marker!r} and one {end_marker!r}"
-        )
+        return template
 
     before, after_start = template.split(start_marker, 1)
+    if end_marker not in after_start:
+        return template
     _, after = after_start.split(end_marker, 1)
     mermaid_block = f"```mermaid\n{generated_mermaid.rstrip()}\n```"
     return f"{before}{start_marker}\n{mermaid_block}\n{end_marker}{after}"
