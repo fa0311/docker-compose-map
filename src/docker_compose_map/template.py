@@ -47,7 +47,7 @@ def _replace_graph(template: str, graph_name: GraphName, generated_mermaid: str)
         return template
     _, after = after_start.split(end_marker, 1)
     mermaid_block = f"```mermaid\n{generated_mermaid.rstrip()}\n```"
-    return f"{before}{start_marker}\n{mermaid_block}\n{end_marker}{after}"
+    return f"{before}{start_marker}\n\n{mermaid_block}\n\n{end_marker}{after}"
 
 
 def read_template(path: Path) -> str:
