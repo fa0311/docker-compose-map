@@ -245,32 +245,28 @@ def render_compose_deps(stacks: tuple[Stack, ...], direction: Direction) -> str:
             else:
                 orphan_networks.setdefault(consumer_uid, set()).add(global_name)
 
-    ported_services = [
-        (stack, service)
-        for stack in stacks
-        for service in stack.services.values()
-        if service.ports
-    ]
+    ported_stacks = [stack for stack in stacks if _stack_port_labels(stack)]
 
     lines = [f"graph {direction.value}"]
-    if not pair_networks and not orphan_networks and not ported_services:
+    if not pair_networks and not orphan_networks and not ported_stacks:
         lines.append('  none["(no cross-stack network dependencies)"]')
         return "\n".join(lines)
 
     outside = "outside"
-    if ported_services:
+    if ported_stacks:
         lines.append(f'  {outside}(("🌐 External<br/>Internet / LAN"))')
 
-    involved = {uid for pair in pair_networks for uid in pair} | set(orphan_networks)
+    involved = (
+        {uid for pair in pair_networks for uid in pair}
+        | set(orphan_networks)
+        | {stack.uid for stack in ported_stacks}
+    )
     for uid in sorted(involved):
         lines.append(f'  {mid("c", uid)}["{esc(name_by_uid[uid])}"]')
 
     orphan_global_names = sorted({name for names in orphan_networks.values() for name in names})
     for global_name in orphan_global_names:
         lines.append(f'  {mid("n", global_name)}{{{{"🔗 {esc(global_name)}<br/>(no creator)"}}}}')
-
-    for stack, service in ported_services:
-        lines.append(f'  {mid("v", stack.uid, service.name)}["{esc(service.name)}"]')
 
     lines.append("")
     for (consumer_uid, creator_uid), network_names in sorted(pair_networks.items()):
@@ -282,13 +278,13 @@ def render_compose_deps(stacks: tuple[Stack, ...], direction: Direction) -> str:
                 f'  {mid("c", consumer_uid)} -->|"{esc(global_name)}"| {mid("n", global_name)}'
             )
 
-    if ported_services:
-        _append_ports(lines, stacks, outside)
+    if ported_stacks:
+        _append_stack_ports(lines, ported_stacks, outside)
 
     lines.append("")
     lines.append("  classDef net fill:#fef3c7,stroke:#d97706,color:#7c2d12;")
     lines.append("  classDef out fill:#dcfce7,stroke:#16a34a,color:#14532d;")
-    if ported_services:
+    if ported_stacks:
         lines.append(f"  class {outside} out;")
     if orphan_global_names:
         lines.append(
@@ -297,6 +293,15 @@ def render_compose_deps(stacks: tuple[Stack, ...], direction: Direction) -> str:
             + " net;"
         )
     return "\n".join(lines)
+
+
+def _stack_port_labels(stack: Stack) -> tuple[str, ...]:
+    labels: list[str] = []
+    for service in stack.services.values():
+        if service.ports:
+            ports = "/".join(f":{port}" for port in service.ports)
+            labels.append(f"{service.name} {ports}")
+    return tuple(labels)
 
 
 def _network_scoped_services(
@@ -341,6 +346,16 @@ def _append_ports(lines: list[str], stacks: tuple[Stack, ...], outside: str) -> 
                 lines.append(
                     f'  {outside} -->|"publishes {ports}"| {mid("v", stack.uid, service.name)}'
                 )
+
+
+def _append_stack_ports(lines: list[str], stacks: list[Stack], outside: str) -> None:
+    lines.append("")
+    for stack in stacks:
+        labels = _stack_port_labels(stack)
+        if labels:
+            lines.append(
+                f'  {outside} -->|"publishes {esc("; ".join(labels))}"| {mid("c", stack.uid)}'
+            )
 
 
 def _append_unified_styles(

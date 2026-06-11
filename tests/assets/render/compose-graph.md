@@ -3,6 +3,7 @@
 ## Map
 
 <!-- compose-map:map:start -->
+
 ```mermaid
 graph TD
   outside(("🌐 External<br/>Internet / LAN"))
@@ -36,11 +37,13 @@ graph TD
   class vol__app__data vol;
   class host___srv_shared host;
 ```
+
 <!-- compose-map:map:end -->
 
 ## Network / ports
 
 <!-- compose-map:network:start -->
+
 ```mermaid
 graph TD
   outside(("🌐 External<br/>Internet / LAN"))
@@ -65,11 +68,13 @@ graph TD
   class outside out;
   class n__edge_net net;
 ```
+
 <!-- compose-map:network:end -->
 
 ## Volumes / mounts
 
 <!-- compose-map:volumes:start -->
+
 ```mermaid
 graph TD
   subgraph g__app["app"]
@@ -86,11 +91,13 @@ graph TD
   class vol__app__data vol;
   class host___srv_shared host;
 ```
+
 <!-- compose-map:volumes:end -->
 
 ## Compose dependencies
 
 <!-- compose-map:dependencies:start -->
+
 ```mermaid
 graph TD
   outside(("🌐 External<br/>Internet / LAN"))
@@ -106,4 +113,5 @@ graph TD
   classDef out fill:#dcfce7,stroke:#16a34a,color:#14532d;
   class outside out;
 ```
+
 <!-- compose-map:dependencies:end -->
