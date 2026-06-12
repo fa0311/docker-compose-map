@@ -1,0 +1,21 @@
+name: vpn
+services:
+  gateway:
+    image: wireguard
+    networks:
+      - monitor
+    ports:
+      - "51820:51820/udp"
+  torrent:
+    image: transmission
+    network_mode: service:gateway
+    depends_on:
+      - gateway
+    volumes:
+      - downloads:/downloads
+volumes:
+  downloads:
+networks:
+  monitor:
+    external:
+      name: monitor_net

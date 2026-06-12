@@ -102,9 +102,9 @@ def render_unified(stacks: tuple[Stack, ...], direction: Direction) -> str:
                     f"  {service_id} -.->|shares netns| {mid('v', stack.uid, service.netns_target)}"
                 )
             for volume in service.mounts:
-                lines.append(f"  {mid('vol', stack.uid, volume)} -.-> {service_id}")
+                lines.append(f"  {service_id} -.->|mounts| {mid('vol', stack.uid, volume)}")
             for host_path in service.host_mounts:
-                lines.append(f"  {mid('host', host_path)} -.-> {service_id}")
+                lines.append(f"  {service_id} -.->|mounts| {mid('host', host_path)}")
 
     _append_shared_network_edges(lines, shared)
     _append_ports(lines, stacks, outside)
@@ -197,9 +197,9 @@ def render_volume(stacks: tuple[Stack, ...], direction: Direction) -> str:
         for service in stack.services.values():
             service_id = mid("v", stack.uid, service.name)
             for volume in service.mounts:
-                lines.append(f"  {mid('vol', stack.uid, volume)} -.-> {service_id}")
+                lines.append(f"  {service_id} -.->|mounts| {mid('vol', stack.uid, volume)}")
             for host_path in service.host_mounts:
-                lines.append(f"  {mid('host', host_path)} -.-> {service_id}")
+                lines.append(f"  {service_id} -.->|mounts| {mid('host', host_path)}")
 
     lines.append("")
     lines.append("  classDef vol fill:#e0e7ff,stroke:#4f46e5,color:#312e81;")
@@ -344,7 +344,7 @@ def _append_ports(lines: list[str], stacks: tuple[Stack, ...], outside: str) -> 
             if service.ports:
                 ports = "/".join(f":{port}" for port in service.ports)
                 lines.append(
-                    f'  {outside} -->|"publishes {ports}"| {mid("v", stack.uid, service.name)}'
+                    f'  {mid("v", stack.uid, service.name)} -->|"publishes {ports}"| {outside}'
                 )
 
 
@@ -354,7 +354,7 @@ def _append_stack_ports(lines: list[str], stacks: list[Stack], outside: str) -> 
         labels = _stack_port_labels(stack)
         if labels:
             lines.append(
-                f'  {outside} -->|"publishes {esc("; ".join(labels))}"| {mid("c", stack.uid)}'
+                f'  {mid("c", stack.uid)} -->|"publishes {esc("; ".join(labels))}"| {outside}'
             )
 
 

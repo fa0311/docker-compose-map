@@ -20,7 +20,7 @@ def test_cli_keeps_generated_markdown_output_unchanged(
 
     result = runner.invoke(
         app,
-        [str(repo / "*" / "compose.yaml"), "-o", str(output), "--direction", "TD"],
+        [str(repo / "*" / "compose.yaml"), "-o", str(output)],
     )
 
     assert result.exit_code == 0, result.output

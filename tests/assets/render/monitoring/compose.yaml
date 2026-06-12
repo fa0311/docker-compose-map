@@ -1,0 +1,17 @@
+name: monitoring
+services:
+  prometheus:
+    image: prom/prometheus
+    networks:
+      - monitor
+    ports:
+      - "9090:9090"
+    volumes:
+      - metrics:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+volumes:
+  metrics:
+networks:
+  monitor:
+    name: monitor_net
+    external: true

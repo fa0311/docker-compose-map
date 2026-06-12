@@ -1,0 +1,9 @@
+name: backup
+services:
+  archiver:
+    image: restic
+    volumes:
+      - archive:/cache
+      - /mnt/backups:/backups
+volumes:
+  archive:

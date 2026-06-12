@@ -3,21 +3,48 @@ services:
   web:
     image: nginx
     depends_on:
-      - db
+      api:
+        condition: service_started
     networks:
       - edge
+      - backend
     ports:
       - "8080:80"
+      - target: 443
+        published: 8443
     volumes:
       - data:/var/lib/app
       - /srv/shared:/srv/shared
+      - ./config:/etc/nginx/conf.d:ro
+      - $APP_CONFIG:/etc/app
+  api:
+    image: node
+    depends_on:
+      - db
+      - cache
+    networks:
+      - backend
+    ports:
+      - "3000"
   db:
     image: postgres
     networks:
-      - edge
+      - backend
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - type: volume
+        source: dbdata
+        target: /var/lib/postgresql/data
+  cache:
+    image: redis
+    networks:
+      - backend
 volumes:
   data:
+  dbdata:
 networks:
   edge:
     name: edge_net
     external: true
+  backend:
